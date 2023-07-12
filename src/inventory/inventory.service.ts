@@ -42,4 +42,16 @@ export class InventoryService {
       throw new Error(error.message || 'Failed to create or update inventory');
     }
   }
+
+  async getInventoryByID(itemID: number): Promise<Inventory> {
+    const inventory = await this.inventoryRepository.findOne({
+      where: { itemID },
+    });
+
+    if (!inventory) {
+      throw new NotFoundException('Inventory item not found');
+    }
+
+    return inventory;
+  }
 }
