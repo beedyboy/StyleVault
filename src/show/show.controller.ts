@@ -1,4 +1,10 @@
-import { Controller, Post, Param, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Param,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { ShowService } from './show.service';
 import { Show } from '../entities/show.entity';
 
@@ -11,12 +17,17 @@ export class ShowController {
     @Param('showID') showID: number,
     @Param('itemID') itemID: number,
   ): Promise<Show> {
-    const show = await this.showService.buyItem(showID, itemID);
-
-    if (!show) {
-      throw new NotFoundException('Show or inventory item not found');
+    try {
+      const show = await this.showService.buyItem(showID, itemID);
+      return show;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException('Show or inventory item not found');
+      }
+      if (error instanceof BadRequestException) {
+        throw new BadRequestException('Insufficient inventory for the item');
+      }
+      throw new BadRequestException('Failed to process the request');
     }
-
-    return show;
   }
 }
