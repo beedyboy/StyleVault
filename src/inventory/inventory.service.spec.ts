@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { InventoryService } from './inventory.service';
-import { InventoryItemDto } from './inventory.dto';
-import { Inventory } from './inventory.entity';
+import { InventoryItemDto } from '../../src/dtos/inventory.dto';
+import { Inventory } from '../../src/entities/inventory.entity';
 
 describe('InventoryService', () => {
   let service: InventoryService;
