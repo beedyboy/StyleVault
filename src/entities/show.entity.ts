@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Inventory } from './inventory.entity';
 
 @Entity()
@@ -9,9 +15,10 @@ export class Show {
   @Column()
   showID: number;
 
-  @ManyToOne(() => Inventory, (inventory) => inventory.shows)
-  inventory: Inventory;
-
   @Column()
   quantitySold: number;
+
+  @OneToOne(() => Inventory)
+  @JoinColumn()
+  inventory: Inventory;
 }
