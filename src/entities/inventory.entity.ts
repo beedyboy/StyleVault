@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Show } from './show.entityt';
+import { Show } from './show.entity';
 
 @Entity()
 export class Inventory {
