@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InventoryModule } from './inventory/inventory.module';
+import { ShowModule } from './show/show.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { InventoryModule } from './inventory/inventory.module';
       entities: ['dist/**/*.entity.js'],
     }),
     InventoryModule,
+    ShowModule,
   ],
 })
 export class AppModule {}
