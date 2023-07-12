@@ -114,4 +114,48 @@ describe('ShowService', () => {
       expect(inventoryServiceGetInventoryByIdSpy).toHaveBeenCalledWith(1);
     });
   });
+
+  describe('findSoldItemsByShow', () => {
+    it('should find sold items by show without itemID', async () => {
+      const showID = 1245;
+      const expectedSoldItems = [
+        { id: 1, showID, quantitySold: 1, inventory: { id: 1 } },
+        { id: 2, showID, quantitySold: 2, inventory: { id: 2 } },
+      ];
+
+      const showRepositoryFindManySpy = jest
+        .spyOn(showRepository, 'createQueryBuilder')
+        .mockReturnValue({
+          where: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockResolvedValue(expectedSoldItems),
+        } as any);
+
+      const result = await showService.findSoldItemsByShow(showID);
+
+      expect(showRepositoryFindManySpy).toHaveBeenCalledWith('show');
+      expect(result).toEqual(expectedSoldItems);
+    });
+
+    it('should find sold items by show with itemID', async () => {
+      const showID = 1245;
+      const itemID = 1234;
+      const expectedSoldItems = [
+        { id: 1, showID, quantitySold: 1, inventory: { id: 1, itemID } },
+      ];
+
+      const showRepositoryFindManySpy = jest
+        .spyOn(showRepository, 'createQueryBuilder')
+        .mockReturnValue({
+          where: jest.fn().mockReturnThis(),
+          andWhere: jest.fn().mockReturnThis(),
+          getMany: jest.fn().mockResolvedValue(expectedSoldItems),
+        } as any);
+
+      const result = await showService.findSoldItemsByShow(showID, itemID);
+
+      expect(showRepositoryFindManySpy).toHaveBeenCalledWith('show');
+      expect(result).toEqual(expectedSoldItems);
+    });
+  });
 });
