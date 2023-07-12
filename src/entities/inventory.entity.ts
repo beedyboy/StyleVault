@@ -3,9 +3,11 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Show } from './show.entityt';
 
 @Entity()
 export class Inventory {
@@ -21,6 +23,9 @@ export class Inventory {
 
   @Column()
   quantity: number;
+
+  @OneToMany(() => Show, (show) => show.inventory)
+  shows: Show[];
 
   @CreateDateColumn() createdAt!: Date;
 
