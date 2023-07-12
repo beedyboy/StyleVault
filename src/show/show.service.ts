@@ -39,4 +39,15 @@ export class ShowService {
     return this.showRepository.save(show);
   }
 
+  async findSoldItemsByShow(showID: number, itemID?: number): Promise<Show[]> {
+    const queryBuilder = this.showRepository
+      .createQueryBuilder('show')
+      .where('show.showID = :showID', { showID });
+
+    if (itemID) {
+      queryBuilder.andWhere('show.inventory.itemID = :itemID', { itemID });
+    }
+
+    return queryBuilder.getMany();
+  }
 }
