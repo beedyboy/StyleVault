@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ShowController } from './show.controller';
 import { ShowService } from './show.service';
 import { Show } from '../entities/show.entity';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Inventory } from '../../src/entities/inventory.entity';
 import { InventoryService } from '../../src/inventory/inventory.service';
@@ -32,7 +32,6 @@ describe('ShowController', () => {
     controller = module.get<ShowController>(ShowController);
     service = module.get<ShowService>(ShowService);
   });
-
   describe('buyItem', () => {
     it('should buy an item and return the show', async () => {
       const showID = 1;
@@ -64,10 +63,38 @@ describe('ShowController', () => {
       const showID = 1;
       const itemID = 12345;
 
-      jest.spyOn(service, 'buyItem').mockResolvedValue(null);
+      jest.spyOn(service, 'buyItem').mockRejectedValue(new NotFoundException());
 
       await expect(controller.buyItem(showID, itemID)).rejects.toThrowError(
         NotFoundException,
+      );
+      expect(service.buyItem).toHaveBeenCalledTimes(1);
+      expect(service.buyItem).toHaveBeenCalledWith(showID, itemID);
+    });
+
+    it('should throw BadRequestException when there is insufficient inventory', async () => {
+      const showID = 1;
+      const itemID = 12345;
+
+      jest
+        .spyOn(service, 'buyItem')
+        .mockRejectedValue(new BadRequestException());
+
+      await expect(controller.buyItem(showID, itemID)).rejects.toThrowError(
+        BadRequestException,
+      );
+      expect(service.buyItem).toHaveBeenCalledTimes(1);
+      expect(service.buyItem).toHaveBeenCalledWith(showID, itemID);
+    });
+
+    it('should throw BadRequestException for other errors', async () => {
+      const showID = 1;
+      const itemID = 12345;
+
+      jest.spyOn(service, 'buyItem').mockRejectedValue(new Error());
+
+      await expect(controller.buyItem(showID, itemID)).rejects.toThrowError(
+        BadRequestException,
       );
       expect(service.buyItem).toHaveBeenCalledTimes(1);
       expect(service.buyItem).toHaveBeenCalledWith(showID, itemID);
