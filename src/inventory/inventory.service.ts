@@ -55,6 +55,6 @@ export class InventoryService {
     return inventory;
   }
   async updateInventory(inventory: Inventory): Promise<Inventory> {
-    return this.inventoryRepository.save(inventory);
+    return await this.inventoryRepository.save(inventory);
   }
 }

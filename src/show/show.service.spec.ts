@@ -46,7 +46,7 @@ describe('ShowService', () => {
       inventory.quantity = 10;
 
       const itemID = 1234;
-      const showId = 1245;
+      const showID = 1245;
 
       const show = new Show();
       show.id = 1;
@@ -70,17 +70,18 @@ describe('ShowService', () => {
         .spyOn(showRepository, 'save')
         .mockResolvedValue(show);
 
-      const result = await showService.buyItem(showId, itemID);
+      const result = await showService.buyItem(showID, itemID);
 
-      expect(inventoryServiceGetInventoryByIdSpy).toHaveBeenCalledWith(1);
+      expect(inventoryServiceGetInventoryByIdSpy).toHaveBeenCalledWith(itemID);
       expect(inventoryServiceUpdateInventorySpy).toHaveBeenCalledWith(
         inventory,
       );
       expect(showRepositoryCreateSpy).toHaveBeenCalledWith({
-        showID: 1245,
+        showID,
         quantitySold: 1,
         inventory,
       });
+
       expect(showRepositorySaveSpy).toHaveBeenCalledWith(show);
       expect(result).toEqual(show);
     });
@@ -113,5 +114,4 @@ describe('ShowService', () => {
       expect(inventoryServiceGetInventoryByIdSpy).toHaveBeenCalledWith(1);
     });
   });
-
 });
