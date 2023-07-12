@@ -85,4 +85,19 @@ describe('InventoryService', () => {
       expect(updatedInventory).toEqual(existingInventory);
     });
   });
+  describe('getInventory', () => {
+    it('should return inventory where id exist', async () => {
+      const inventory = new Inventory();
+      inventory.itemID = 12345;
+      inventory.itemName = 'Fancy Dress';
+      inventory.quantity = 5;
+      jest.spyOn(repository, 'findOne').mockResolvedValueOnce(inventory);
+      const result = await service.getInventoryByID(12345);
+      expect(result).toEqual(inventory);
+    });
+    it('should throw error when id does not exist', async () => {
+      jest.spyOn(repository, 'findOne').mockResolvedValueOnce(null);
+      await expect(service.getInventoryByID(12345)).rejects.toThrowError();
+    });
+  });
 });
