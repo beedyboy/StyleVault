@@ -100,4 +100,30 @@ describe('InventoryService', () => {
       await expect(service.getInventoryByID(12345)).rejects.toThrowError();
     });
   });
+  describe('updateInventory', () => {
+    it('should update the inventory', async () => {
+      // Arrange
+      const inventory: Inventory = {
+        id: 1,
+        itemID: 12345,
+        itemName: 'Fancy Dress',
+        quantity: 10,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      jest
+        .spyOn(repository, 'save')
+        .mockImplementation((entity) => Promise.resolve(entity as Inventory));
+
+      const updatedInventory = { ...inventory, quantity: 5 };
+
+      const result = await service.updateInventory(updatedInventory);
+      // Assert
+      expect(repository.save).toHaveBeenCalledTimes(1);
+      expect(repository.save).toHaveBeenCalledWith(updatedInventory);
+
+      expect(result).toEqual(updatedInventory);
+    });
+  });
 });
