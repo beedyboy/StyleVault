@@ -4,9 +4,11 @@ import {
   Param,
   NotFoundException,
   BadRequestException,
+  Get,
 } from '@nestjs/common';
 import { ShowService } from './show.service';
 import { Show } from '../entities/show.entity';
+import { ISoldItem } from 'src/interfaces/show.interface';
 
 @Controller('show')
 export class ShowController {
@@ -29,5 +31,16 @@ export class ShowController {
       }
       throw new BadRequestException('Failed to process the request');
     }
+  }
+  @Get('/:show_ID/sold_items/:item_id?')
+  async findSoldItemsByShow(
+    @Param('show_ID') show_ID: number,
+    @Param('item_id') item_id?: number,
+  ): Promise<ISoldItem | ISoldItem[]> {
+    const soldItems = await this.showService.findSoldItemsByShow(
+      show_ID,
+      item_id,
+    );
+    return soldItems;
   }
 }
