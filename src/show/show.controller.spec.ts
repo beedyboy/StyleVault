@@ -100,4 +100,5 @@ describe('ShowController', () => {
       expect(service.buyItem).toHaveBeenCalledWith(showID, itemID);
     });
   });
+  
 });

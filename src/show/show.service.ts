@@ -5,8 +5,9 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Show } from '../entities/show.entity';
+import { Show } from '../../src/entities/show.entity';
 import { InventoryService } from '../inventory/inventory.service';
+import { ISoldItem } from 'src/interfaces/show.interface';
 
 @Injectable()
 export class ShowService {
@@ -38,16 +39,27 @@ export class ShowService {
 
     return this.showRepository.save(show);
   }
-
-  async findSoldItemsByShow(showID: number, itemID?: number): Promise<Show[]> {
-    const queryBuilder = this.showRepository
+  async findSoldItemsByShow(
+    showId: number,
+    itemId?: number,
+  ): Promise<ISoldItem | ISoldItem[]> {
+    const query = this.showRepository
       .createQueryBuilder('show')
-      .where('show.showID = :showID', { showID });
+      .leftJoinAndSelect('show.inventory', 'inventory')
+      .select(['inventory.itemID', 'inventory.itemName', 'show.quantitySold'])
+      .where('show.showID = :showId', { showId });
 
-    if (itemID) {
-      queryBuilder.andWhere('show.inventory.itemID = :itemID', { itemID });
+    if (itemId) {
+      query.andWhere('inventory.itemID = :itemId', { itemId });
     }
 
-    return queryBuilder.getMany();
+    const results = await query.getMany();
+
+    if (itemId) {
+      // Cast the result to ISoldItem for single item
+      return results[0] as unknown as ISoldItem;
+    }
+    // Return the results for multiple items
+    return results as unknown as ISoldItem[];
   }
 }

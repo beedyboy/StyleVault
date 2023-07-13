@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InventoryItemDto } from '../dtos/inventory.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Inventory } from '../entities/inventory.entity';
+import { Inventory } from '../../src/entities/inventory.entity';
 
 @Injectable()
 export class InventoryService {

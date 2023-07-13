@@ -1,20 +1,19 @@
-import { Test } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Repository } from 'typeorm';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ShowService } from './show.service';
-import { InventoryService } from '../inventory/inventory.service';
-import { Show } from '../entities/show.entity';
-import { Inventory } from '../entities/inventory.entity';
+import { Show } from '../../src/entities/show.entity';
+import { Inventory } from '../../src/entities/inventory.entity';
+import { InventoryService } from '../../src/inventory/inventory.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
 
 describe('ShowService', () => {
   let showService: ShowService;
-  let inventoryService: InventoryService;
   let showRepository: Repository<Show>;
-  let inventoryRepository: Repository<Inventory>;
+  let inventoryService: InventoryService;
 
   beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       providers: [
         ShowService,
         InventoryService,
@@ -29,14 +28,10 @@ describe('ShowService', () => {
       ],
     }).compile();
 
-    showService = moduleRef.get<ShowService>(ShowService);
-    inventoryService = moduleRef.get<InventoryService>(InventoryService);
-    showRepository = moduleRef.get<Repository<Show>>(getRepositoryToken(Show));
-    inventoryRepository = moduleRef.get<Repository<Inventory>>(
-      getRepositoryToken(Inventory),
-    );
+    showService = module.get<ShowService>(ShowService);
+    showRepository = module.get<Repository<Show>>(getRepositoryToken(Show));
+    inventoryService = module.get<InventoryService>(InventoryService);
   });
-
   describe('buyItem', () => {
     it('should buy an item and update inventory and show', async () => {
       const inventory = new Inventory();
@@ -116,46 +111,70 @@ describe('ShowService', () => {
   });
 
   describe('findSoldItemsByShow', () => {
-    it('should find sold items by show without itemID', async () => {
-      const showID = 1245;
-      const expectedSoldItems = [
-        { id: 1, showID, quantitySold: 1, inventory: { id: 1 } },
-        { id: 2, showID, quantitySold: 2, inventory: { id: 2 } },
+    it('should return an array of sold items for the provided showID', async () => {
+      // Mock the query result
+      const mockQueryResult = [
+        {
+          itemID: 12345,
+          itemName: 'Fancy Dress',
+          quantitySold: 4,
+        },
+        {
+          itemID: 67890,
+          itemName: 'Magic Wand',
+          quantitySold: 2,
+        },
       ];
+      // Set the return value of getMany on mockQueryBuilder
+      jest.spyOn(showRepository, 'createQueryBuilder').mockReturnValueOnce({
+        select: jest.fn().mockReturnThis(),
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValueOnce(mockQueryResult),
+      } as any);
 
-      const showRepositoryFindManySpy = jest
-        .spyOn(showRepository, 'createQueryBuilder')
-        .mockReturnValue({
-          where: jest.fn().mockReturnThis(),
-          andWhere: jest.fn().mockReturnThis(),
-          getMany: jest.fn().mockResolvedValue(expectedSoldItems),
-        } as any);
+      const result = await showService.findSoldItemsByShow(123);
 
-      const result = await showService.findSoldItemsByShow(showID);
-
-      expect(showRepositoryFindManySpy).toHaveBeenCalledWith('show');
-      expect(result).toEqual(expectedSoldItems);
+      expect(result).toEqual([
+        {
+          itemID: 12345,
+          itemName: 'Fancy Dress',
+          quantitySold: 4,
+        },
+        {
+          itemID: 67890,
+          itemName: 'Magic Wand',
+          quantitySold: 2,
+        },
+      ]);
     });
 
-    it('should find sold items by show with itemID', async () => {
-      const showID = 1245;
-      const itemID = 1234;
-      const expectedSoldItems = [
-        { id: 1, showID, quantitySold: 1, inventory: { id: 1, itemID } },
+    it('should return a single sold item for the provided showID and itemID', async () => {
+      // Mock the query result
+      const mockQueryResult = [
+        {
+          itemID: 12345,
+          itemName: 'Fancy Dress',
+          quantitySold: 4,
+        },
       ];
+      // Set the return value of getMany on mockQueryBuilder
+      jest.spyOn(showRepository, 'createQueryBuilder').mockReturnValueOnce({
+        select: jest.fn().mockReturnThis(),
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValueOnce(mockQueryResult),
+      } as any);
 
-      const showRepositoryFindManySpy = jest
-        .spyOn(showRepository, 'createQueryBuilder')
-        .mockReturnValue({
-          where: jest.fn().mockReturnThis(),
-          andWhere: jest.fn().mockReturnThis(),
-          getMany: jest.fn().mockResolvedValue(expectedSoldItems),
-        } as any);
+      const result = await showService.findSoldItemsByShow(123, 12345);
 
-      const result = await showService.findSoldItemsByShow(showID, itemID);
-
-      expect(showRepositoryFindManySpy).toHaveBeenCalledWith('show');
-      expect(result).toEqual(expectedSoldItems);
+      expect(result).toEqual({
+        itemID: 12345,
+        itemName: 'Fancy Dress',
+        quantitySold: 4,
+      });
     });
   });
 });
