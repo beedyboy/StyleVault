@@ -1,73 +1,157 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# StyleVault Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This is the backend application for StyleVault, a platform for finding and buying the latest fashion and beauty items. This application provides APIs to manage item inventory, make purchases during live shows, and retrieve information about sold items.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Table of Contents
 
-## Description
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+  - [Database Setup](#database-setup)
+  - [Running the Application](#running-the-application)
+- [API Endpoints](#api-endpoints)
+  - [POST /inventory](#post-inventory)
+  - [POST /show/:show_ID/buy_item/:item_ID](#post-showshow_idbuy_itemitem_id)
+  - [GET /show/:show_ID/sold_items/:item_id](#get-showshow_idsold_itemsitem_id)
+- [Testing](#testing)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Getting Started
 
-## Installation
+To get the application up and running on your local machine, follow the instructions below.
 
-```bash
-$ npm install
+### Prerequisites
+
+Make sure you have the following software installed on your system:
+
+- Node.js (version 16 or higher)
+- npm (Node Package Manager)
+- MySQL
+
+### Installation
+
+1. Clone the repository:
+
+   ```shell
+   git clone https://github.com/beedyboy/StyleVault.git
+   ```
+
+2. Navigate to the project directory:
+
+   ```shell
+   cd StyleVault
+   ```
+
+3. Install the dependencies using either `npm ci` or `npm install`:
+
+   ```shell
+   npm ci
+   ```
+
+   **Note:** If `npm ci` fails, use `npm install` instead.
+
+### Configuration
+
+The application uses environment variables for configuration. Create a new file named `.env` in the project root directory and provide the required variables. You can find a sample `.env.example` file in the repository that you can copy the content from:
+
+```plaintext
+PORT=3000
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+DB_DATABASE=stylevault
 ```
 
-## Running the app
+Make sure to replace `your_username` and `your_password` with your MySQL database credentials.
 
-```bash
-# development
-$ npm run start
+### Database Setup
 
-# watch mode
-$ npm run start:dev
+1. Create a new MySQL database named `stylevault`.
 
-# production mode
-$ npm run start:prod
+2. The database tables will be automatically created by TypeORM when you run the application.
+
+### Running the Application
+
+Before starting the application, build it using the following command:
+
+```shell
+npm run build
+```
+Then
+
+```shell
+npm start
 ```
 
-## Test
+### Or
+Start the application in local development mode using the following command:
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```shell
+npm run start:dev
 ```
 
-## Support
+The application will start running on the specified port (default: 3000) and connect to the configured MySQL database.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## API Endpoints
 
-## Stay in touch
+The following API endpoints are available:
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### POST /inventory
 
-## License
+Add or update item inventory in stock right now.
 
-Nest is [MIT licensed](LICENSE).
+- Request:
+
+  ```plaintext
+  POST /inventory
+  ```
+
+  Request Body:
+
+  ```json
+  [
+    {
+      "itemID": 12345,
+      "itemName": "Fancy Dress",
+      "quantity": 10
+    }
+  ]
+  ```
+
+### POST /show/:show_ID/buy_item/:item_ID
+
+Buy a single item during a show.
+
+- Request:
+
+  ```plaintext
+  POST /show/:show_ID/buy_item/:item_ID
+  ```
+
+  Parameters:
+  - `show_ID`: The ID of the show.
+  - `item_ID`: The ID of the item to be purchased.
+
+### GET /show/:show_ID/sold_items/:item_id
+
+Retrieve information about sold items.
+
+- Request:
+
+  ```plaintext
+  GET /show/:show_ID/sold_items/:item_id
+  ```
+
+  Parameters:
+  - `show_ID`: The ID of the show.
+  - `item_id` (optional): The ID of the item. If not provided, returns information about all items sold by the show.
+
+## Testing
+
+The application includes unit tests to ensure the correctness of the implemented functionality. You can run the tests using the following command:
+
+```shell
+npm test
+```
+``` 
