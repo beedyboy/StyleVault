@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Show } from '../../src/entities/show.entity';
+import { Show } from '../entities/show.entity';
 import { InventoryService } from '../inventory/inventory.service';
 import { ISoldItem } from 'src/interfaces/show.interface';
 

@@ -1,4 +1,4 @@
-import { HttpStatus, NotFoundException } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InventoryController } from './inventory.controller';
 import { InventoryService } from './inventory.service';
